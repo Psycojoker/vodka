@@ -1,6 +1,7 @@
 import _ast
 import ast
 
+
 class ClassFinder(ast.NodeVisitor):
     def __init__(self):
         self.models = {}
@@ -20,6 +21,7 @@ class ClassFinder(ast.NodeVisitor):
         self.models[class_node.name] = {"class_name": class_node.name}
         KeyAttributesFinder(self.models[class_node.name]).visit(class_node)
 
+
 class KeyAttributesFinder(ast.NodeVisitor):
     def __init__(self, model):
         self.model = model
@@ -32,6 +34,7 @@ class KeyAttributesFinder(ast.NodeVisitor):
 
     def visit_FunctionDef(self, _):
         pass
+
 
 def get_classes_from_string(string):
     class_finder = ClassFinder()
