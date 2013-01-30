@@ -10,8 +10,34 @@ def parse_attr(attr):
     while isinstance(attr, _ast.Attribute):
         to_return.append(attr.attr)
         attr = attr.value
-    to_return.append(attr.id)  # assume we are a Name
+    to_return.append(get_value(attr))
     return ".".join(reversed(to_return))
+
+
+def get_value(elt):
+    if isinstance(elt, _ast.Num):
+        return elt.n
+    elif isinstance(elt, _ast.Name):
+        return elt.id
+    elif isinstance(elt, _ast.Str):
+        return elt.s
+    elif isinstance(elt, (_ast.List, _ast.Tuple)):
+        return map(get_value, elt.elts)
+    elif isinstance(elt, _ast.Dict):
+        return dict(zip(map(get_value, elt.keys), map(get_value, elt.values)))
+    elif isinstance(elt, _ast.Lambda):
+        return "lambda"
+    elif isinstance(elt, _ast.Call) and isinstance(elt.func, _ast.Name):
+        # TODO: handle keywords
+        return "%s(%s)" % (elt.func.id, map(get_value, elt.args) if elt.args else "")
+    elif isinstance(elt, _ast.Call):
+        return parse_attr(elt.func)
+    elif isinstance(elt, _ast.Attribute):
+        return parse_attr(elt)
+    elif isinstance(elt, _ast.BinOp) and isinstance(elt.op, _ast.Add):
+        return parse_attr(elt.left) + parse_attr(elt.right)
+    else:
+        raise Exception(elt)
 
 def parse_gettext(string_or_call):
     if isinstance(string_or_call, _ast.Str):
@@ -83,6 +109,8 @@ class KeyAttributesFinder(ast.NodeVisitor):
 
             row["type"] = value.func.attr
             handle_args.get(row["type"], self.handle_generic)(value.args, row)
+            for kwarg in value.keywords:
+                row[kwarg.arg] = get_value(kwarg.value)
             to_return.append(row)
         return to_return
 
