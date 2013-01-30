@@ -123,8 +123,8 @@ class KeyAttributesFinder(ast.NodeVisitor):
 
     def handle_one2many(self, args, row):
         for arg in args:
-            if isinstance(arg, (_ast.Str, _ast.Call)) and not row.get("model"):
-                row["model"] = parse_gettext(arg)
+            if isinstance(arg, (_ast.Str, _ast.Call)) and not row.get("relation"):
+                row["relation"] = parse_gettext(arg)
             elif isinstance(arg, (_ast.Str, _ast.Call)) and not row.get("field"):
                 row["field"] = parse_gettext(arg)
             elif isinstance(arg, (_ast.Str, _ast.Call)) and not row.get("string"):
@@ -134,8 +134,8 @@ class KeyAttributesFinder(ast.NodeVisitor):
 
     def handle_many2one(self, args, row):
         for arg in args:
-            if isinstance(arg, (_ast.Str, _ast.Call)) and not row.get("model"):
-                row["model"] = parse_gettext(arg)
+            if isinstance(arg, (_ast.Str, _ast.Call)) and not row.get("relation"):
+                row["relation"] = parse_gettext(arg)
             elif isinstance(arg, (_ast.Str, _ast.Call)) and not row.get("string"):
                 row["string"] = parse_gettext(arg)
             elif isinstance(arg, (_ast.Str, _ast.Call)):
@@ -177,8 +177,8 @@ class KeyAttributesFinder(ast.NodeVisitor):
 
     def handle_many2many(self, args, row):
         for arg in args:
-            if isinstance(arg, (_ast.Str, _ast.Call)) and not row.get("model"):
-                row["model"] = parse_gettext(arg)
+            if isinstance(arg, (_ast.Str, _ast.Call)) and not row.get("relation"):
+                row["relation"] = parse_gettext(arg)
             elif isinstance(arg, (_ast.Str, _ast.Call)) and not row.get("relation_table"):
                 row["relation_table"] = parse_gettext(arg)
             elif isinstance(arg, (_ast.Str, _ast.Call)) and not row.get("field1"):
