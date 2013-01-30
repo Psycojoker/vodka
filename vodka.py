@@ -222,8 +222,7 @@ def get_classes_from_config_file(config_path="~/.openerp_serverrc"):
                     continue
                 addons[addon.name].update(get_classes_from_string(open(python_file).read()))
 
-    from ipdb import set_trace; set_trace()
-    print addons
+    return addons
 
 
 if __name__ == '__main__':
