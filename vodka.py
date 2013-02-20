@@ -1,17 +1,17 @@
 # Vodka is a lib that extract OpenERP models informations
 # Copyright (C) 2013  Laurent Peuch <cortex@worlddomination.be>
 # Copyright (C) 2013  Railnova SPRL <railnova@railnova.eu>
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -261,14 +261,14 @@ def get_classes_from_config_file(config_path="~/.openerp_serverrc"):
             else:
                 del addons[addon.name]
                 continue
-            addons[addon.name]["models"] = {}
+
             for python_file in addon.walk("*.py"):
                 if python_file.name.startswith("_"):
                     continue
                 models = get_classes_from_string(open(python_file).read())
                 for model in models.keys():
                     models[model]["file"] = python_file
-                addons[addon.name]["models"].update(models)
+                addons[addon.name].setdefault("models", {}).update(models)
 
     return addons
 
