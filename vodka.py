@@ -271,6 +271,16 @@ def get_views_from_string(string):
 
             xml["views"][view["id"]] = {"model": field_model.text, "string": str(view)}
 
+        elif view.get("model") == "ir.actions.act_window":
+            field_model = get_field(view, "res_model")
+            if field_model is None:
+                continue
+            xml["actions"][view["id"]] = {"model": field_model.text, "string": str(view)}
+            if get_field(view, "view_type"):
+                xml["actions"][view["id"]]["view_type"] = get_field(view, "view_type").text
+            if get_field(view, "view_mode"):
+                xml["actions"][view["id"]]["view_mode"] = get_field(view, "view_mode").text
+
     return xml
 
 def get_classes_from_config_file(config_path="~/.openerp_serverrc"):
@@ -301,6 +311,7 @@ def get_classes_from_config_file(config_path="~/.openerp_serverrc"):
             for xml_file in addon.walk("*.xml"):
                 xml = get_views_from_string(open(xml_file, "r").read())
                 addons[addon.name].setdefault("xml", {}).setdefault("views", {}).update(xml["views"])
+                addons[addon.name].setdefault("xml", {}).setdefault("actions", {}).update(xml["actions"])
 
     return addons
 
