@@ -227,6 +227,13 @@ def get_classes_from_config_file(config_path="~/.openerp_serverrc"):
         addons_folder = path(addons_folder)
         for addon in addons_folder.dirs():
             addons[addon.name] = {}
+            if addon.joinpath("__openerp__.py").exists():
+                addons[addon.name]["__openerp__"] = eval(open(addon.joinpath("__openerp__.py"), "r").read())
+            elif addon.joinpath("__terp__.py").exists():
+                addons[addon.name]["__openerp__"] = eval(open(addon.joinpath("__terp__.py"), "r").read())
+            else:
+                del addons[addon.name]
+                continue
             addons[addon.name]["models"] = {}
             for python_file in addon.walk("*.py"):
                 if python_file.name.startswith("_"):
