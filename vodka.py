@@ -21,6 +21,8 @@ import ast
 from ConfigParser import ConfigParser
 from path import path
 
+from BeautifulSoup import BeautifulStoneSoup
+
 
 def parse_attr(attr):
     to_return = []
@@ -245,6 +247,32 @@ def get_classes_from_string(string):
     return class_finder.models
 
 
+def get_views_from_string(string):
+    def get_field(view, name, default=None):
+        # stupid bug in BS, you can't search on 'name=' since name is the
+        # keyword for tag_name
+        field_model = filter(lambda x: x.get('name') == name, view('field', recursive=False))
+        if field_model:
+            return field_model[0]
+        return default
+
+    soup = BeautifulStoneSoup(string)
+    xml = {"views": {}, "actions": {}}
+    if not soup.openerp or not soup.openerp.data:
+        return xml
+
+    for view in soup.openerp.data("record"):
+        if not view.get("id"):
+            continue
+        if view.get("model") == 'ir.ui.view':
+            field_model = get_field(view, "model")
+            if field_model is None:
+                continue
+
+            xml["views"][view["id"]] = {"model": field_model.text, "string": str(view)}
+
+    return xml
+
 def get_classes_from_config_file(config_path="~/.openerp_serverrc"):
     addons = {}
     config_parser = ConfigParser()
@@ -269,6 +297,10 @@ def get_classes_from_config_file(config_path="~/.openerp_serverrc"):
                 for model in models.keys():
                     models[model]["file"] = python_file
                 addons[addon.name].setdefault("models", {}).update(models)
+
+            for xml_file in addon.walk("*.xml"):
+                xml = get_views_from_string(open(xml_file, "r").read())
+                addons[addon.name].setdefault("xml", {}).setdefault("views", {}).update(xml["views"])
 
     return addons
 
