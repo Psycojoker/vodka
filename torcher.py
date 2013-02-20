@@ -9,16 +9,19 @@ if __name__ == '__main__':
     to_write = []
     relations = []
     for key, module in db.items():
-        #if not key.startswith("railfleet"):
+        #if not key.startswith("railfleet") and key not in ("products", "mrp", "stock"):
             #continue
-        if key not in ("railfleet", "railfleet_maintenance", "railfleet_maintenance_alstom"):
+        #if key not in ("railfleet", "railfleet_maintenance", "railfleet_maintenance_alstom"):
+            #continue
+        if key not in ("mrp", "sale"):
             continue
         to_write.append('subgraph cluster%s {\nlabel="%s"' % (key.replace(" ", ""), key))
+        #to_write.append('subgraph cluster%s {\nlabel="%s"\nbgcolor="#FCFCFC"' % (key.replace(" ", ""), key))
         for class_name, data in module.items():
             #print classes
             #from ipdb import set_trace; set_trace()
             if not data.get("_inherit"):
-                to_write.append('"%s" [\nshape="record"\nlabel="{%s |%s}"]' % (data.get("_name", class_name), data.get("_name", class_name), "|".join(map(lambda x: x.get("name", ""), data.get("_columns", [])))))
+                to_write.append('"%s" [\nshape="record"\ncolor="#AAAAAA"\nlabel="{%s |%s}"]' % (data.get("_name", class_name), data.get("_name", class_name), "|".join(map(lambda x: x.get("name", ""), data.get("_columns", [])))))
             else:
                 to_write.append('"%s [%s]" [\nshape="record"\nlabel="{%s [%s] |%s}"]' % (data.get("_name", class_name), key, data.get("_name", class_name), "|".join(map(lambda x: x.get("name", ""), data.get("_columns", []))), key))
                 relations.append('"%s" -> "%s"' % (data.get("_name", class_name), data["_inherit"]))
