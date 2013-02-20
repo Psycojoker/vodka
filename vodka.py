@@ -18,11 +18,22 @@
 import os
 import _ast
 import ast
+import subprocess
 from ConfigParser import ConfigParser
 from path import path
 
 from BeautifulSoup import BeautifulStoneSoup
 
+def format_xml(to_write):
+    xmllint_is_installed = subprocess.Popen(['which', 'xmllint'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0]
+    if not xmllint_is_installed:
+        return to_write
+
+    formated, err = subprocess.Popen(['xmllint', '--format', '/dev/stdin'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate(to_write)
+    if not err:
+        # remove <?xml ...> stuff
+        to_write = "\n".join(formated.split("\n")[1:])
+    return to_write
 
 def parse_attr(attr):
     to_return = []
@@ -269,13 +280,13 @@ def get_views_from_string(string):
             if field_model is None:
                 continue
 
-            xml["views"][view["id"]] = {"model": field_model.text, "string": str(view)}
+            xml["views"][view["id"]] = {"model": field_model.text, "string": format_xml(str(view))}
 
         elif view.get("model") == "ir.actions.act_window":
             field_model = get_field(view, "res_model")
             if field_model is None:
                 continue
-            xml["actions"][view["id"]] = {"model": field_model.text, "string": str(view)}
+            xml["actions"][view["id"]] = {"model": field_model.text, "string": format_xml(str(view))}
             if get_field(view, "view_type"):
                 xml["actions"][view["id"]]["view_type"] = get_field(view, "view_type").text
             if get_field(view, "view_mode"):
