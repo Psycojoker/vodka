@@ -86,6 +86,7 @@ class ClassFinder(ast.NodeVisitor):
             return
         self.models[class_node.name] = {"class_name": class_node.name}
         self.models[class_node.name]["lineno"] = {"class": class_node.lineno}
+        self.models[class_node.name]["methods"] = []
         KeyAttributesFinder(self.models[class_node.name]).visit(class_node)
 
 
@@ -106,8 +107,15 @@ class KeyAttributesFinder(ast.NodeVisitor):
             self.model[assign_node.targets[0].id] = self.parse_columns(assign_node.value)
             self.model["lineno"]["_columns"] = assign_node.lineno
 
-    def visit_FunctionDef(self, _):
-        pass
+    def visit_FunctionDef(self, function_node):
+        self.model["methods"].append({
+            "name": function_node.name,
+            "lineno": function_node.lineno,
+            "args": map(lambda x: get_value(x), function_node.args.args),
+            "defaults": map(lambda x: get_value(x), function_node.args.defaults),
+            "kwarg": function_node.args.kwarg,
+            "vararg": function_node.args.vararg,
+        })
 
     def parse_columns(self, columns):
         handle_args = {
