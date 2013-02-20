@@ -119,6 +119,14 @@ class KeyAttributesFinder(ast.NodeVisitor):
     def handle_generic(self, args, row):
         for arg in args:
             if isinstance(arg, (_ast.Str, _ast.Call)) and not row.get("string"):
+                try:
+                    row["string"] = unicode(parse_gettext(arg))
+                except UnicodeDecodeError:
+                    pass
+                try:
+                    row["string"] = parse_gettext(arg).decode("Utf-8")
+                except UnicodeEncodeError:
+                    pass
                 row["string"] = parse_gettext(arg)
             else:
                 raise
