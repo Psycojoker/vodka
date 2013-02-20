@@ -82,6 +82,8 @@ class KeyAttributesFinder(ast.NodeVisitor):
                 self.model[assign_node.targets[0].id] = value if len(value) > 1 else value[0]
             else:
                 self.model[assign_node.targets[0].id] = assign_node.value.s
+            if assign_node.targets[0].id == "_inherit" and not self.model.has_key("_name"):
+                self.model["_name"] = self.model["_inherit"]
         if assign_node.targets[0].id == "_columns":
             self.model[assign_node.targets[0].id] = self.parse_columns(assign_node.value)
 
