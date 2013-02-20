@@ -328,7 +328,8 @@ def get_classes_from_config_file(config_path="~/.openerp_serverrc"):
 
 
 if __name__ == '__main__':
-    get_classes_from_config_file()
+    import json
+    open("db.json", "w").write(json.dumps(get_classes_from_config_file(), indent=4))
     #a = get_classes_from_string(open("/home/psycojoker/railnova/railfleet-modules/railfleet_maintenance_alstom/maintenance.py").read())
     #from pprint import pprint
     #pprint(a)
