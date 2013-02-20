@@ -227,10 +227,11 @@ def get_classes_from_config_file(config_path="~/.openerp_serverrc"):
         addons_folder = path(addons_folder)
         for addon in addons_folder.dirs():
             addons[addon.name] = {}
+            addons[addon.name]["models"] = {}
             for python_file in addon.walk("*.py"):
                 if python_file.name.startswith("_"):
                     continue
-                addons[addon.name].update(get_classes_from_string(open(python_file).read()))
+                addons[addon.name]["models"].update(get_classes_from_string(open(python_file).read()))
 
     return addons
 
