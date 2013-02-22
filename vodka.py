@@ -311,18 +311,20 @@ def get_classes_from_config_file(config_path="~/.openerp_serverrc"):
                 del addons[addon.name]
                 continue
 
+            addons[addon.name]["models"] = {}
             for python_file in addon.walk("*.py"):
                 if python_file.name.startswith("_"):
                     continue
                 models = get_classes_from_string(open(python_file).read())
                 for model in models.keys():
                     models[model]["file"] = python_file
-                addons[addon.name].setdefault("models", {}).update(models)
+                addons[addon.name]["models"].update(models)
 
+            addons[addon.name]["xml"] = {"views": {}, "actions": {}}
             for xml_file in addon.walk("*.xml"):
                 xml = get_views_from_string(open(xml_file, "r").read())
-                addons[addon.name].setdefault("xml", {}).setdefault("views", {}).update(xml["views"])
-                addons[addon.name].setdefault("xml", {}).setdefault("actions", {}).update(xml["actions"])
+                addons[addon.name]["xml"]["views"].update(xml["views"])
+                addons[addon.name]["xml"]["actions"].update(xml["actions"])
 
     return addons
 
