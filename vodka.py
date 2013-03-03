@@ -141,7 +141,7 @@ class KeyAttributesFinder(ast.NodeVisitor):
         }
         to_return = []
         for key, value in zip(columns.keys, columns.values):
-            row = {"name": key.s}
+            row = {"name": key.s, "lineno": key.lineno}
 
             if isinstance(getattr(value, "func", None), _ast.Name):  # for ppl that overwrite fields class
                 row["type"] = value.func.id
