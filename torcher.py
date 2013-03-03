@@ -17,7 +17,7 @@ if __name__ == '__main__':
             continue
         to_write.append('subgraph cluster%s {\nlabel="%s"' % (key.replace(" ", ""), key))
         #to_write.append('subgraph cluster%s {\nlabel="%s"\nbgcolor="#FCFCFC"' % (key.replace(" ", ""), key))
-        for class_name, data in module.items():
+        for class_name, data in module["models"].items():
             #print classes
             #from ipdb import set_trace; set_trace()
             if not data.get("_inherit"):
