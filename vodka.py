@@ -22,7 +22,7 @@ import subprocess
 from ConfigParser import ConfigParser
 from path import path
 
-from BeautifulSoup import BeautifulStoneSoup
+from bs4 import BeautifulSoup
 
 def format_xml(to_write):
     xmllint_is_installed = subprocess.Popen(['which', 'xmllint'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0]
@@ -267,7 +267,7 @@ def get_views_from_string(string):
             return field_model[0]
         return default
 
-    soup = BeautifulStoneSoup(string)
+    soup = BeautifulSoup(string, features="xml")
     xml = {"views": {}, "actions": {}}
     if not soup.openerp or not soup.openerp.data:
         return xml
