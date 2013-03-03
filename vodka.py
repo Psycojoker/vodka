@@ -283,7 +283,7 @@ def get_views_from_string(string):
             if field_model is None:
                 continue
 
-            xml["views"][view["id"]] = {"model": field_model.text, "string": format_xml(str(view))}
+            xml["views"][view["id"]] = {"model": field_model.text, "string": format_xml(str(view)), "type": getattr(get_field(view, "type"), "text", None)}
 
         elif view.get("model") == "ir.actions.act_window":
             field_model = get_field(view, "res_model")
