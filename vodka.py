@@ -152,7 +152,10 @@ class KeyAttributesFinder(ast.NodeVisitor):
             row["type"] = value.func.attr
             handle_args.get(row["type"], self.handle_generic)(value.args, row)
             for kwarg in value.keywords:
-                row[kwarg.arg] = get_value(kwarg.value)
+                if row["type"] == "related" and kwarg.arg == "type":
+                    row["related_type"] = get_value(kwarg.value)
+                else:
+                    row[kwarg.arg] = get_value(kwarg.value)
             to_return.append(row)
         return to_return
 
